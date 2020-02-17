@@ -1,3 +1,10 @@
-.project
-.classpath
+
 bin/
+out
+
+libs/*
+
+*.iws
+
+
+.idea

@@ -7,7 +7,7 @@ Requirements:
 - Customize the outfile, entryclass, extcp_build, and extcp_manifest properties.
 ================================================================================================-->
 
-<project basedir=".." default="build" name="jebplugin">
+<project basedir="." default="build" name="jebplugin">
 
     <fail message="Set the plugin version number: -DpluginVersion=x.y.z">
       <condition>
@@ -18,18 +18,31 @@ Requirements:
     </fail>
     <echo message="Plugin version: ${pluginVersion}"/>
 
-    <property environment="env"/>
-    <echo message="JEB_HOME: ${env.JEB_HOME}"/>
+<!--    <property environment="env"/>-->
+<!--    <echo message="JEB_HOME: ${env.JEB_HOME}"/>-->
 
-    <property name="jebjar" value="${env.JEB_HOME}/bin/app/jeb.jar"/>
+<!--    <property name="jebjar" value="${env.JEB_HOME}/bin/app/jeb.jar"/>-->
+    <property name="jebjar" value="libs/jeb.jar"/>
     <echo message="JEB Core expected at location: ${jebjar}"/>
 
-    <fail message="Please set the JEB_HOME environment variable to point to your JEB installation folder">
+<!--    <fail message="Please set the JEB_HOME environment variable to point to your JEB installation folder">-->
+    <fail message="Please copy jeb.jar to libs/jeb.jar">
       <condition>
         <not>
           <available file="${jebjar}"/>
         </not>
       </condition>
+    </fail>
+
+    <property name="apidoczip" value="libs/apidoc.zip"/>
+    <echo message="JEB api doc expected at location: ${apidoczip}"/>
+
+    <fail message="Please copy apidoc.zip to libs/apidoc.zip">
+        <condition>
+            <not>
+                <available file="${apidoczip}"/>
+            </not>
+        </condition>
     </fail>
 
     <property name="debuglevel" value="source,lines,vars"/>
@@ -46,11 +59,12 @@ Requirements:
     <property name="extcp_manifest" value=""/>
 
     <target name="build" depends="clean,compile,package"/>
-    <target name="audit" depends="clean,compile-audit"/>
+<!--    <target name="audit" depends="clean,compile-audit"/>-->
 
     <target name="clean">
         <delete dir="bin"/>
-        <mkdir dir="bin"/>
+<!--        <mkdir dir="bin"/>-->
+        <delete dir="out"/>
     </target>
 
     <target name="compile">
@@ -59,25 +73,25 @@ Requirements:
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}" encoding="UTF-8">
             <src path="${src}"/>
             <classpath>
-                <pathelement location="${jebjar}"/>
-                <pathelement path="${extcp_build}"/>
+                <pathelement location="libs/jeb.jar"/>
+                <pathelement path="build.xml"/>
             </classpath>
         </javac>
     </target>
 
-    <target name="compile-audit">
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}" encoding="UTF-8"
-               compiler="com.google.errorprone.ErrorProneAntCompilerAdapter">
-            <compilerclasspath>
-                <pathelement location="../jeb2-common/errorprone.jar"/>
-            </compilerclasspath>
-            <src path="${src}"/>
-            <classpath>
-                <pathelement location="${jebjar}"/>
-                <pathelement path="${extcp_build}"/>
-            </classpath>
-        </javac>
-    </target>
+<!--    <target name="compile-audit">-->
+<!--        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}" encoding="UTF-8"-->
+<!--               compiler="com.google.errorprone.ErrorProneAntCompilerAdapter">-->
+<!--            <compilerclasspath>-->
+<!--                <pathelement location="../jeb2-common/errorprone.jar"/>-->
+<!--            </compilerclasspath>-->
+<!--            <src path="${src}"/>-->
+<!--            <classpath>-->
+<!--                <pathelement location="libs/jeb.jar"/>-->
+<!--                <pathelement path="build.xml"/>-->
+<!--            </classpath>-->
+<!--        </javac>-->
+<!--    </target>-->
 
     <target name="package">
         <delete file="${outfile}"/>
@@ -89,9 +103,10 @@ Requirements:
             </manifest>
             <fileset dir="bin"/>
             <!-- copy resources -->
-            <fileset dir="${src}" excludes="**/*.java"/>
-            <fileset dir="." includes="README.md"/>
+            <fileset dir="src" excludes="**/*.java"/>
+            <fileset dir="" includes="README.md"/>
         </jar>
+        <delete dir="bin"/>
     </target>
 
 </project>
